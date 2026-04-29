@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Catalogue from './pages/Catalogue';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from './pages/AdminPanel';
 import CourseOverview from './pages/CourseOverview';
 import MyLearning from './pages/MyLearning';
 import Classroom from './pages/Classroom';
