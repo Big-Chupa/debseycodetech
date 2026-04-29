@@ -18,7 +18,7 @@ const Catalogue = () => {
   // Wrapped in a function so we can call it again if we need to refresh
   const fetchCourses = async () => {
     try {
-      const response = await axios.get('http://localhost:5005/api/courses');
+      const response = await axios.get('https://debseycodetech.onrender.com/api/courses');
       setCourses(response.data);
       setLoading(false);
     } catch (err) {
@@ -36,7 +36,7 @@ const Catalogue = () => {
     if (isConfirmed) {
       try {
         // 2. Send the kill command to the backend
-        await axios.delete(`http://localhost:5005/api/courses/${courseId}`);
+        await axios.delete(`https://debseycodetech.onrender.com/api/courses/${courseId}`);
         
         // 3. Remove it from the screen immediately without reloading the page
         setCourses(courses.filter(course => course._id !== courseId));

@@ -18,7 +18,7 @@ const Certificate = () => {
     const fetchCourse = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`http://localhost:5005/api/courses/${id}`, {
+        const res = await axios.get(`https://debseycodetech.onrender.com/api/courses/${id}`, {
           headers: { 'x-auth-token': token } 
         });
         setCourse(res.data);

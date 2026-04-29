@@ -41,7 +41,7 @@ const AdminDashboard = () => {
     setStatus({ type: 'info', message: '☁️ Streaming heavy file to Cloudinary...' });
     
     try {
-      const response = await axios.post('http://localhost:5005/api/upload/video', formData, {
+      const response = await axios.post('https://debseycodetech.onrender.com/api/upload/video', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setIsUploading(false);
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
       const finalPayload = { ...courseData, lessons };
 
       // THE FIX: Reverted to your exact backend route and your exact auth token format!
-      await axios.post('http://localhost:5005/api/courses', finalPayload, {
+      await axios.post('https://debseycodetech.onrender.com/api/courses', finalPayload, {
         headers: { 'x-auth-token': token }
       });
 

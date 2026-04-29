@@ -43,7 +43,7 @@ const AdminDashboard = () => {
     
     setIsUploading(true);
     try {
-      const response = await axios.post('http://localhost:5005/api/upload', formData, {
+      const response = await axios.post('https://debseycodetech.onrender.com/api/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setIsUploading(false);

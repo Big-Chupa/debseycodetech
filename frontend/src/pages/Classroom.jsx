@@ -16,7 +16,7 @@ const Classroom = () => {
     const fetchCourse = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`http://localhost:5005/api/courses/${id}`, {
+        const res = await axios.get(`https://debseycodetech.onrender.com/api/courses/${id}`, {
           headers: { 'x-auth-token': token } 
         });
         setCourse(res.data);
@@ -37,7 +37,7 @@ const Classroom = () => {
 
       try {
         const token = localStorage.getItem('token');
-        await axios.post('http://localhost:5005/api/auth/progress', {
+        await axios.post('https://debseycodetech.onrender.com/api/auth/progress', {
           courseId: id,
           lessonIndex: activeLessonIndex
         }, {

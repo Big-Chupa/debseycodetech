@@ -28,7 +28,7 @@ const CourseOverview = () => {
     alert("Payment verified! Giving you access to the classroom...");
 
     try {
-      await axios.post('http://localhost:5005/api/auth/enroll', {
+      await axios.post('https://debseycodetech.onrender.com/api/auth/enroll', {
         email: userEmail,
         courseId: course._id
       });
@@ -61,7 +61,7 @@ const CourseOverview = () => {
   useEffect(() => {
     const fetchSingleCourse = async () => {
       try {
-        const response = await axios.get(`http://localhost:5005/api/courses/${id}`);
+        const response = await axios.get(`https://debseycodetech.onrender.com/api/courses/${id}`);
         setCourse(response.data);
         setLoading(false);
       } catch (err) {

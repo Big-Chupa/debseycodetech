@@ -19,7 +19,7 @@ const MyLearning = () => {
 
         // Knock on the new backend door we just built!
         const response = await axios.get(
-          "http://localhost:5005/api/auth/my-learning",
+          "https://debseycodetech.onrender.com/api/auth/my-learning",
           {
             headers: { "x-auth-token": token },
           }

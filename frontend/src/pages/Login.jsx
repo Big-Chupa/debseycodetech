@@ -26,13 +26,13 @@ const Login = () => {
     try {
       if (isRegister) {
         // 1. REGISTER FLOW
-        await axios.post("http://localhost:5005/api/auth/register", formData);
+        await axios.post("https://debseycodetech.onrender.com/api/auth/register", formData);
         alert("Registration Successful! Please login.");
         setIsRegister(false); // Switch to login view
       } else {
         // 2. LOGIN FLOW
         const response = await axios.post(
-          "http://localhost:5005/api/auth/login",
+          "https://debseycodetech.onrender.com/api/auth/login",
           {
             email: formData.email,
             password: formData.password,
