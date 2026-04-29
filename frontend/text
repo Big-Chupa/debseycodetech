@@ -1,0 +1,223 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import './AdminDashboard.css';
+
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const [status, setStatus] = useState({ type: '', message: '' });
+  const [isUploading, setIsUploading] = useState(false);
+
+  // 1. Course Data State
+  const [courseData, setCourseData] = useState({
+    title: '',
+    description: '',
+    category: 'Software development',
+    price: 0,
+    thumbnail: '', 
+    previewVideo: '' 
+  });
+
+  // 2. Dynamic Lessons Array (Starts with 1 empty lesson)
+  const [lessons, setLessons] = useState([
+    { title: '', videoUrl: '', duration: '' }
+  ]);
+
+  useEffect(() => {
+    const role = localStorage.getItem('userRole');
+    if (role !== 'admin') {
+      alert("Access Denied: Admins Only");
+      navigate('/');
+    }
+  }, [navigate]);
+
+  const handleCourseChange = (e) => {
+    setCourseData({ ...courseData, [e.target.name]: e.target.value });
+  };
+
+  // 3. The Universal File Upload Engine
+  // This sends the file to your backend, which sends it to Cloudinary
+  const uploadFileToCloud = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    setIsUploading(true);
+    try {
+      const response = await axios.post('http://localhost:5005/api/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setIsUploading(false);
+      return response.data.url; // The permanent Cloudinary URL
+    } catch (err) {
+      console.error(err);
+      setIsUploading(false);
+      alert("File upload failed!");
+      return null;
+    }
+  };
+
+  // 4. Handle Course Level Files (Thumbnail & Preview)
+  const handleCourseFileChange = async (e, fieldName) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const uploadedUrl = await uploadFileToCloud(file);
+    if (uploadedUrl) {
+      setCourseData({ ...courseData, [fieldName]: uploadedUrl });
+    }
+  };
+
+  // 5. Handle Dynamic Lesson File Uploads
+  const handleLessonFileChange = async (e, index) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const uploadedUrl = await uploadFileToCloud(file);
+    if (uploadedUrl) {
+      const updatedLessons = [...lessons];
+      updatedLessons[index].videoUrl = uploadedUrl;
+      setLessons(updatedLessons);
+    }
+  };
+
+  // 6. Handle Lesson Text Changes
+  const handleLessonTextChange = (e, index) => {
+    const updatedLessons = [...lessons];
+    updatedLessons[index][e.target.name] = e.target.value;
+    setLessons(updatedLessons);
+  };
+
+  // 7. Add & Remove Lessons
+  const addLesson = () => {
+    setLessons([...lessons, { title: '', videoUrl: '', duration: '' }]);
+  };
+
+  const removeLesson = (index) => {
+    const updatedLessons = [...lessons];
+    updatedLessons.splice(index, 1);
+    setLessons(updatedLessons);
+  };
+
+  // 8. Submit Final Bundle to Database
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus({ type: '', message: '' });
+
+    // Validate that files have finished uploading
+    if (!courseData.thumbnail) return alert("Please wait for the Thumbnail to finish uploading.");
+    const missingVideo = lessons.some(lesson => !lesson.videoUrl);
+    if (missingVideo) return alert("Please wait for all lesson videos to finish uploading.");
+
+    try {
+      const token = localStorage.getItem('token');
+      const finalPayload = { ...courseData, lessons };
+
+      await axios.post('http://localhost:5000/api/courses/create', finalPayload, {
+        headers: { 'x-auth-token': token }
+      });
+
+      setStatus({ type: 'success', message: 'Course successfully published to the Database!' });
+      
+      // Reset form
+      setCourseData({ title: '', description: '', category: 'Software development', price: 0, thumbnail: '', previewVideo: '' });
+      setLessons([{ title: '', videoUrl: '', duration: '' }]);
+
+    } catch (err) {
+      setStatus({ type: 'error', message: err.response?.data?.msg || 'Failed to publish course.' });
+    }
+  };
+
+  return (
+    <div className="admin-container">
+      <div className="admin-header">
+        <h1 className="admin-title">DebseyCodeTech Command Center</h1>
+      </div>
+
+      <div className="admin-card">
+        <h2>Create a New Course</h2>
+        
+        {status.message && <div className={`status-message ${status.type}`}>{status.message}</div>}
+
+        <form className="course-form" onSubmit={handleSubmit}>
+          
+          <div className="form-row">
+            <label>Course Title</label>
+            <input type="text" name="title" value={courseData.title} onChange={handleCourseChange} required />
+          </div>
+
+          <div className="form-row">
+            <label>Description</label>
+            <textarea name="description" value={courseData.description} onChange={handleCourseChange} rows="4" required />
+          </div>
+
+          <div className="form-row">
+            <label>Category</label>
+            <select name="category" value={courseData.category} onChange={handleCourseChange}>
+              <option value="Software development">Software development</option>
+              <option value="Frontend development">Frontend development</option>
+              <option value="Backend development">Backend development</option>
+              <option value="Fullstack development">Fullstack development</option>
+              <option value="UI/UX Design and graphic design">UI/UX Design and graphic design</option>
+            </select>
+          </div>
+
+          <div className="form-row">
+            <label>Price (USD) - Set to 0 for Free</label>
+            <input type="number" name="price" value={courseData.price} onChange={handleCourseChange} min="0" required />
+          </div>
+
+          <div className="form-row">
+            <label>Course Thumbnail (Image)</label>
+            <input type="file" accept="image/*" onChange={(e) => handleCourseFileChange(e, 'thumbnail')} required={!courseData.thumbnail} />
+            {courseData.thumbnail && <span className="upload-status">✅ Image Uploaded to Cloudinary!</span>}
+          </div>
+
+          <div className="form-row">
+            <label>Free Preview Video (Optional)</label>
+            <input type="file" accept="video/*" onChange={(e) => handleCourseFileChange(e, 'previewVideo')} />
+            {courseData.previewVideo && <span className="upload-status">✅ Preview Video Uploaded!</span>}
+          </div>
+
+          <hr style={{ margin: '2rem 0', borderColor: '#e2e8f0' }} />
+          <h2>Course Curriculum</h2>
+
+          {/* DYNAMIC LESSON RENDERING */}
+          {lessons.map((lesson, index) => (
+            <div key={index} className="lesson-section">
+              {lessons.length > 1 && (
+                <button type="button" className="remove-btn" onClick={() => removeLesson(index)}>Remove</button>
+              )}
+              <h3>Lesson {index + 1}</h3>
+              
+              <div className="form-row" style={{ marginBottom: '1rem' }}>
+                <label>Lesson Title</label>
+                <input type="text" name="title" value={lesson.title} onChange={(e) => handleLessonTextChange(e, index)} required />
+              </div>
+
+              <div className="form-row" style={{ marginBottom: '1rem' }}>
+                <label>Upload Video</label>
+                <input type="file" accept="video/*" onChange={(e) => handleLessonFileChange(e, index)} required={!lesson.videoUrl} />
+                {lesson.videoUrl && <span className="upload-status">✅ Video Uploaded!</span>}
+              </div>
+
+              <div className="form-row">
+                <label>Duration (e.g., 10:45)</label>
+                <input type="text" name="duration" value={lesson.duration} onChange={(e) => handleLessonTextChange(e, index)} />
+              </div>
+            </div>
+          ))}
+
+          <button type="button" className="add-lesson-btn" onClick={addLesson}>
+            + Add Another Lesson
+          </button>
+
+          <button type="submit" className="submit-course-btn" disabled={isUploading}>
+            {isUploading ? 'Uploading Files to Cloud...' : 'Publish Full Course'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;

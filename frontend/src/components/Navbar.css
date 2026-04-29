@@ -1,0 +1,151 @@
+/* FIXED NAVBAR STYLES */
+.global-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: #0f172a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;
+  z-index: 1000; /* Keeps it above all other content */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.navbar-logo a {
+  color: #38bdf8;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  margin-left: 2rem;
+}
+
+.nav-links a {
+  color: #f8fafc;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #38bdf8;
+}
+
+.admin-link {
+  color: #10b981 !important; /* Green to stand out */
+}
+
+/* BUTTONS */
+.nav-btn {
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+}
+
+.login-btn {
+  background-color: #38bdf8;
+  color: #0f172a !important;
+}
+
+.logout-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* HAMBURGER MENU (Hidden on Desktop) */
+.hamburger {
+  display: none;
+  cursor: pointer;
+}
+
+.hamburger div {
+  width: 25px;
+  height: 3px;
+  background-color: #f8fafc;
+  margin: 5px;
+  transition: all 0.3s ease;
+}
+
+/* MOBILE RESPONSIVE STYLES */
+@media screen and (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .nav-links {
+    position: absolute;
+    right: 0px;
+    top: 70px;
+    height: calc(100vh - 70px);
+    background-color: #0f172a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 60%;
+    transform: translateX(100%);
+    transition: transform 0.4s ease-in-out;
+  }
+
+  .nav-links li {
+    margin: 2rem 0;
+  }
+
+  /* Slide in effect */
+  .nav-active {
+    transform: translateX(0%);
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  /* Hamburger Animation */
+  .toggle .line1 {
+    transform: rotate(-45deg) translate(-5px, 6px);
+  }
+  .toggle .line2 {
+    opacity: 0;
+  }
+  .toggle .line3 {
+    transform: rotate(45deg) translate(-5px, -6px);
+  }
+}
+/* USER GREETING STYLES */
+.user-greeting-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Puts a nice space between the name and the button */
+}
+
+.welcome-text {
+  color: #f8fafc;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+/* Adjust mobile layout for the greeting */
+@media screen and (max-width: 768px) {
+  .user-greeting-wrapper {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
